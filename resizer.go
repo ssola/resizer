@@ -29,32 +29,32 @@ func resizing(w http.ResponseWriter, r *http.Request) {
     var newWidth, newHeight uint
 
     // Get parameters
-    originalImage := r.FormValue("image")
+    imageUrl := r.FormValue("image")
     newWidth, _ = parseInteger(r.FormValue("width"))
     newHeight, _ = parseInteger(r.FormValue("height"))
 
     // Download the image
-    oImage, err := http.Get(originalImage)
+    imageBuffer, err := http.Get(imageUrl)
     if err != nil {
         format_error(err, w)
     }
 
-    finalImage, _, _ := image.Decode(oImage.Body)
+    finalImage, _, _ := image.Decode(imageBuffer.Body)
 
     r.Body.Close()
 
-    imageInMemory := resize.Resize(newWidth, newHeight, finalImage, resize.Lanczos3)
+    imageResized := resize.Resize(newWidth, newHeight, finalImage, resize.Lanczos3)
 
-    if oImage.Header.Get("Content-Type") == "image/png" {
-        png.Encode(w, imageInMemory)
+    if imageBuffer.Header.Get("Content-Type") == "image/png" {
+        png.Encode(w, imageResized)
     }
 
-    if oImage.Header.Get("Content-Type") == "image/jpg" {
-        jpeg.Encode(w, imageInMemory, nil)
+    if imageBuffer.Header.Get("Content-Type") == "image/jpg" {
+        jpeg.Encode(w, imageResized, nil)
     }
 
-    if oImage.Header.Get("Content-Type") == "binary/octet-stream" {
-        jpeg.Encode(w, imageInMemory, nil)
+    if imageBuffer.Header.Get("Content-Type") == "binary/octet-stream" {
+        jpeg.Encode(w, imageResized, nil)
     }
 }
 
