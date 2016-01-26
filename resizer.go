@@ -4,39 +4,61 @@ import (
 	"fmt"
 	"net/http"
 	"io"
+	"github.com/nfnt/resize"
+	"image"
+	"image/jpeg"
+	"image/png"
+	"strconv"
 )
 
+// Return a given error in JSON format to the ResponseWriter
 func format_error(err error, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, fmt.Sprintf("{ \"error\": \"%s\"}", err))
 	return
 }
 
-func resize(w http.ResponseWriter, r *http.Request) {
+// Parse a given string into a uint value
+func parseInteger(value string) (uint, error) {
+	integer, err := strconv.Atoi(value)
+	return uint(integer), err
+}
+
+// Resizing endpoint.
+func resizing(w http.ResponseWriter, r *http.Request) {
+	var newWidth, newHeight uint
+
+	// Get parameters
 	originalImage := r.FormValue("image")
-	// newWidth := r.FormValue("width")
-	// newHeight := r.FormValue("height")
+	newWidth, _ = parseInteger(r.FormValue("width"))
+	newHeight, _ = parseInteger(r.FormValue("height"))
 
 	// Download the image
-	image, err := http.Get(originalImage)
+	oImage, err := http.Get(originalImage)
 	if err != nil {
 		format_error(err, w)
 	}
 
-	// If we have the image then let's try to return it back.
-	r.Header.Set("Content-Length", fmt.Sprint(image.ContentLength))
-	r.Header.Set("Content-Type", r.Header.Get("Content-Type"))
-
-	// We just copy the content from the image to the writer.
-	if _, err = io.Copy(w, image.Body); err != nil {
-		format_error(err, w)
-	}
+	finalImage, _, _ := image.Decode(oImage.Body)
 
 	r.Body.Close()
+
+	imageInMemory := resize.Resize(newWidth, newHeight, finalImage, resize.Lanczos3)
+
+	if oImage.Header.Get("Content-Type") == "image/png" {
+		png.Encode(w, imageInMemory)
+	}
+
+	if oImage.Header.Get("Content-Type") == "image/jpg" {
+		jpeg.Encode(w, imageInMemory, nil)
+	}
+
+	if oImage.Header.Get("Content-Type") == "binary/octet-stream" {
+		jpeg.Encode(w, imageInMemory, nil)
+	}
 }
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", resize)
-	http.ListenAndServe(":8080", mux)
+	http.HandleFunc("/resize", resizing)
+	http.ListenAndServe(":8080", nil)
 }
