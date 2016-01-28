@@ -15,12 +15,23 @@ func TestCheckHostInWhiteListWithEmptyConfiguration(t *testing.T) {
 
 func TestCheckHostInWhiteListWithSomeHostsInWhieList(t *testing.T) {
     config := new(Configuration)
-    config.DomainWhiteList = []string{"one host", "two hosts"}
+    config.HostWhiteList = []string{"http://www.google.com", "two hosts"}
     validator := Validator{config}
 
     // Check for one that doesn't exists
-    err := validator.CheckHostInWhiteList("one host2")
-    if err.Error() != "Host  not allowed" {
+    err := validator.CheckHostInWhiteList("http://www.sergiosola.com/")
+    if err == nil {
         t.Errorf("Should return an error!!!")
+    }
+}
+
+func TestCheckHostInWhiteListWithValidHost(t *testing.T) {
+    config := new(Configuration)
+    config.HostWhiteList = []string{"one host", "http://sergiosola.com"}
+    validator := Validator{config}
+
+    err := validator.CheckHostInWhiteList("https://sergiosola.com/images?withParams=dsada")
+    if err == nil {
+        t.Errorf("Should not to return an error!!!")
     }
 }

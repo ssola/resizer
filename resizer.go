@@ -13,7 +13,7 @@ import (
 
 type Configuration struct {
     Port uint
-    DomainWhiteList []string
+    HostWhiteList []string
     Size Size
 }
 

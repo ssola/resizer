@@ -20,7 +20,7 @@ func (v *Validator) CheckHostInWhiteList(requestUrl string) error {
 
     var hostFound bool
 
-    for _, host := range v.config.DomainWhiteList {
+    for _, host := range v.config.HostWhiteList {
         if host == urlParsed.Host {
             hostFound = true
         }
