@@ -44,7 +44,7 @@ func resizing(w http.ResponseWriter, r *http.Request) {
     size.Width, _ = parseInteger(r.FormValue("width"))
     size.Height, _ = parseInteger(r.FormValue("height"))
 
-    validator := ValidatorItem{config}
+    validator := Validator{config}
 
     if err := validator.CheckHostInWhiteList(imageUrl); err != nil {
         formatError(err, w)

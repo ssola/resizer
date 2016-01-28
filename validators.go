@@ -5,17 +5,13 @@ import (
     "fmt"
 )
 
-type ValidatorItem struct {
+type Validator struct {
     config *Configuration
-}
-
-type Validator interface {
-    CheckHostInWhiteList(requestUrl string)
 }
 
 // Checks if given request image host belongs to one in the
 // white list.
-func (v *ValidatorItem) CheckHostInWhiteList(requestUrl string) error {
+func (v *Validator) CheckHostInWhiteList(requestUrl string) error {
     urlParsed, err := url.Parse(requestUrl)
 
     if err != nil {
@@ -38,7 +34,7 @@ func (v *ValidatorItem) CheckHostInWhiteList(requestUrl string) error {
 }
 
 // Validates if new request size is valid or not
-func (v *ValidatorItem) CheckRequestNewSize(s *Size) error {
+func (v *Validator) CheckRequestNewSize(s *Size) error {
     if s.Height <= 0 || s.Width <= 0 {
         return error(fmt.Errorf("Width or height should be bigger than 0"))
     }
