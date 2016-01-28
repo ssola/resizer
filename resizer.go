@@ -20,6 +20,8 @@ type Size struct {
     Height uint
 }
 
+var config *Configuration
+
 // Including basic validation to prevent creating big images
 func validateSize(c *Configuration, s *Size) error {
     if  s.Height >= c.Size.Height {
@@ -46,14 +48,6 @@ func parseInteger(value string) (uint, error) {
 
 // Resizing endpoint.
 func resizing(w http.ResponseWriter, r *http.Request) {
-    // Load configuration
-    viper.SetConfigName("config")
-    viper.AddConfigPath(".")
-    if err := viper.ReadInConfig(); err != nil {
-        panic(fmt.Errorf("Fatal error loading configuration file: %s", err))
-    }
-
-    config := new(Configuration)
     size := new(Size)
 
     // Marshal the configuration into our Struct
@@ -95,6 +89,14 @@ func resizing(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+    // Load configuration
+    viper.SetConfigName("config")
+    viper.AddConfigPath(".")
+
+    if err := viper.ReadInConfig(); err != nil {
+        panic(fmt.Errorf("Fatal error loading configuration file: %s", err))
+    }
+
     http.HandleFunc("/resize", resizing)
     http.ListenAndServe(":8080", nil)
 }
