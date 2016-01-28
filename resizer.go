@@ -9,9 +9,12 @@ import (
     "image/png"
     "strconv"
     "github.com/spf13/viper"
+    "net/url"
 )
 
 type Configuration struct {
+    Port uint
+    DomainWhiteList []string
     Size Size
 }
 
@@ -35,6 +38,29 @@ func validateSize(c *Configuration, s *Size) error {
     return nil
 }
 
+func validateHost(urlRequest string) error {
+    urlParsed, err := url.Parse(urlRequest)
+
+    if err != nil {
+        return err
+    }
+
+    var hostFound bool
+    hostFound = false
+
+    for _, host := range config.DomainWhiteList {
+        if host == urlParsed.Host {
+            hostFound = true
+        }
+    }
+
+    if hostFound {
+        return nil
+    }
+
+    return error(fmt.Errorf("Host %s not allowed", urlParsed.Host))
+}
+
 // Return a given error in JSON format to the ResponseWriter
 func formatError(err error, w http.ResponseWriter)  {
     http.Error(w, fmt.Sprintf("{ \"error\": \"%s\"}", err), 400)
@@ -50,13 +76,15 @@ func parseInteger(value string) (uint, error) {
 func resizing(w http.ResponseWriter, r *http.Request) {
     size := new(Size)
 
-    // Marshal the configuration into our Struct
-    viper.Unmarshal(&config)
-
     // Get parameters
     imageUrl := r.FormValue("image")
     size.Width, _ = parseInteger(r.FormValue("width"))
     size.Height, _ = parseInteger(r.FormValue("height"))
+
+    if err := validateHost(imageUrl); err != nil {
+        formatError(err, w)
+        return
+    }
 
     if err := validateSize(config, size); err != nil {
         formatError(err, w)
@@ -97,6 +125,9 @@ func main() {
         panic(fmt.Errorf("Fatal error loading configuration file: %s", err))
     }
 
+    // Marshal the configuration into our Struct
+    viper.Unmarshal(&config)
+
     http.HandleFunc("/resize", resizing)
-    http.ListenAndServe(":8080", nil)
+    http.ListenAndServe(fmt.Sprintf(":%d", config.Port), nil)
 }

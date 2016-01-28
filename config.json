@@ -1,6 +1,10 @@
 {
-   "size": {
-     "width": 2000,
-     "height": 1000
-   }
+  "port": 8080,
+  "domainwhitelist": [
+      "my-cdn-image.com"
+  ],
+  "size": {
+    "width": 2000,
+    "height": 1000
+  }
 }
