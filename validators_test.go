@@ -27,11 +27,22 @@ func TestCheckHostInWhiteListWithSomeHostsInWhieList(t *testing.T) {
 
 func TestCheckHostInWhiteListWithValidHost(t *testing.T) {
     config := new(Configuration)
-    config.HostWhiteList = []string{"one host", "http://sergiosola.com"}
+    config.HostWhiteList = []string{"one host", "sergiosola.com"}
     validator := Validator{config}
 
     err := validator.CheckHostInWhiteList("https://sergiosola.com/images?withParams=dsada")
-    if err == nil {
+    if err != nil {
+        t.Errorf("Should not to return an error!!!")
+    }
+}
+
+func TestCheckHostInWhiteListWithValidPattern(t *testing.T) {
+    config := new(Configuration)
+    config.HostWhiteList = []string{"www.google.com", "([a-z]+).cdn.google.com"}
+    validator := Validator{config}
+
+    err := validator.CheckHostInWhiteList("https://dsadsaasds.cdn.google.com/images?withParams=dsada")
+    if err != nil {
         t.Errorf("Should not to return an error!!!")
     }
 }

@@ -58,6 +58,7 @@ func resizing(w http.ResponseWriter, r *http.Request) {
 
     // Download the image
     imageBuffer, err := http.Get(imageUrl)
+
     if err != nil {
         formatError(err, w)
         return

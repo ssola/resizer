@@ -2,7 +2,7 @@
   "port": 8080,
   "hostwhitelist": [
       "my-cdn-image.com",
-      "d10up9ll8onrxl.cloudfront.net",
+      "([a-z]+).cloudfront.net",
       "estaticos03.elmundo.es"
   ],
   "size": {

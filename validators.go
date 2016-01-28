@@ -3,6 +3,7 @@ package main
 import (
     "net/url"
     "fmt"
+    "regexp"
 )
 
 type Validator struct {
@@ -21,7 +22,8 @@ func (v *Validator) CheckHostInWhiteList(requestUrl string) error {
     var hostFound bool
 
     for _, host := range v.config.HostWhiteList {
-        if host == urlParsed.Host {
+        match, _ := regexp.MatchString(host, requestUrl)
+        if match {
             hostFound = true
         }
     }
