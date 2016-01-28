@@ -49,7 +49,7 @@ func resizing(w http.ResponseWriter, r *http.Request) {
         png.Encode(w, imageResized)
     }
 
-    if imageBuffer.Header.Get("Content-Type") == "image/jpg" {
+    if imageBuffer.Header.Get("Content-Type") == "image/jpeg" {
         jpeg.Encode(w, imageResized, nil)
     }
 
