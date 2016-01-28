@@ -11,6 +11,11 @@ import (
     "strconv"
 )
 
+type Size struct {
+    Width uint
+    Height uint
+}
+
 // Return a given error in JSON format to the ResponseWriter
 func format_error(err error, w http.ResponseWriter) {
     w.Header().Set("Content-Type", "application/json")
@@ -26,12 +31,12 @@ func parseInteger(value string) (uint, error) {
 
 // Resizing endpoint.
 func resizing(w http.ResponseWriter, r *http.Request) {
-    var newWidth, newHeight uint
+    size := Size{}
 
     // Get parameters
     imageUrl := r.FormValue("image")
-    newWidth, _ = parseInteger(r.FormValue("width"))
-    newHeight, _ = parseInteger(r.FormValue("height"))
+    size.Width, _ = parseInteger(r.FormValue("width"))
+    size.Height, _ = parseInteger(r.FormValue("height"))
 
     // Download the image
     imageBuffer, err := http.Get(imageUrl)
@@ -43,7 +48,7 @@ func resizing(w http.ResponseWriter, r *http.Request) {
 
     r.Body.Close()
 
-    imageResized := resize.Resize(newWidth, newHeight, finalImage, resize.Lanczos3)
+    imageResized := resize.Resize(size.Width, size.Height, finalImage, resize.Lanczos3)
 
     if imageBuffer.Header.Get("Content-Type") == "image/png" {
         png.Encode(w, imageResized)
