@@ -21,4 +21,4 @@ GET host:8080/resize
 - [ ] Create some unit tests
 - [ ] Gopher even more this code
 - [ ] Add support to upload final image result to AWS S3 or similar service (creating adapters)
-- [ ] Configure server with configuration files
+- [x] Configure server with configuration files
