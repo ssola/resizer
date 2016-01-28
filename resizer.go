@@ -9,7 +9,6 @@ import (
     "image/png"
     "strconv"
     "github.com/spf13/viper"
-    "net/url"
 )
 
 type Configuration struct {
@@ -24,42 +23,6 @@ type Size struct {
 }
 
 var config *Configuration
-
-// Including basic validation to prevent creating big images
-func validateSize(c *Configuration, s *Size) error {
-    if  s.Height >= c.Size.Height {
-        return error(fmt.Errorf("Height cannot be higher than %d", c.Size.Height))
-    }
-
-    if s.Width >= c.Size.Width {
-        return error(fmt.Errorf("Width cannot be higher than %d", c.Size.Width))
-    }
-
-    return nil
-}
-
-func validateHost(urlRequest string) error {
-    urlParsed, err := url.Parse(urlRequest)
-
-    if err != nil {
-        return err
-    }
-
-    var hostFound bool
-    hostFound = false
-
-    for _, host := range config.DomainWhiteList {
-        if host == urlParsed.Host {
-            hostFound = true
-        }
-    }
-
-    if hostFound {
-        return nil
-    }
-
-    return error(fmt.Errorf("Host %s not allowed", urlParsed.Host))
-}
 
 // Return a given error in JSON format to the ResponseWriter
 func formatError(err error, w http.ResponseWriter)  {
@@ -81,12 +44,14 @@ func resizing(w http.ResponseWriter, r *http.Request) {
     size.Width, _ = parseInteger(r.FormValue("width"))
     size.Height, _ = parseInteger(r.FormValue("height"))
 
-    if err := validateHost(imageUrl); err != nil {
+    validator := ValidatorItem{config}
+
+    if err := validator.CheckHostInWhiteList(imageUrl); err != nil {
         formatError(err, w)
         return
     }
 
-    if err := validateSize(config, size); err != nil {
+    if err := validator.CheckRequestNewSize(size); err != nil {
         formatError(err, w)
         return
     }
