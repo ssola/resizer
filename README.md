@@ -35,4 +35,4 @@ This service relies on top of some greate packages like:
 - [ ] Gopher even more this code
 - [x] Configure server with configuration files
 - [x] Move validators to another Go file
-- [ ] Allow to find hosts by regex patterns
+- [x] Allow to find hosts by regex patterns
