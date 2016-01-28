@@ -3,7 +3,6 @@ package main
 import (
     "fmt"
     "net/http"
-    "io"
     "github.com/nfnt/resize"
     "image"
     "image/jpeg"
@@ -16,11 +15,21 @@ type Size struct {
     Height uint
 }
 
+func validateSize(s *Size) error {
+    if s.Height >= 1000 {
+        return error(fmt.Errorf("Height cannot be higher than 1000"))
+    }
+
+    if s.Width >= 1000 {
+        return error(fmt.Errorf("Width cannot be higher than 1000"))
+    }
+
+    return nil
+}
+
 // Return a given error in JSON format to the ResponseWriter
-func format_error(err error, w http.ResponseWriter) {
-    w.Header().Set("Content-Type", "application/json")
-    io.WriteString(w, fmt.Sprintf("{ \"error\": \"%s\"}", err))
-    return
+func formatError(err error, w http.ResponseWriter)  {
+    http.Error(w, fmt.Sprintf("{ \"error\": \"%s\"}", err), 400)
 }
 
 // Parse a given string into a uint value
@@ -38,10 +47,16 @@ func resizing(w http.ResponseWriter, r *http.Request) {
     size.Width, _ = parseInteger(r.FormValue("width"))
     size.Height, _ = parseInteger(r.FormValue("height"))
 
+    if err := validateSize(&size); err != nil {
+        formatError(err, w)
+        return
+    }
+
     // Download the image
     imageBuffer, err := http.Get(imageUrl)
     if err != nil {
-        format_error(err, w)
+        formatError(err, w)
+        return
     }
 
     finalImage, _, _ := image.Decode(imageBuffer.Body)
