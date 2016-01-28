@@ -15,6 +15,13 @@ GET host:8080/resize
 - width: New width of the image
 - height: New image height
 
+#### Dependencies
+
+This service relies on top of some greate packages like:
+
+- https://github.com/spf13/viper
+- https://github.com/nfnt/resize
+
 #### TODO
 
 - [x] Resize a given image with width/height parameters
