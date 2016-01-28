@@ -2,6 +2,12 @@
 
 This is a naive approach to build an image resizing service. At the moment given few parameters the system returns the image resized.
 
+At the moment this service supports those versions of Go:
+
+- 1.3
+- 1.4
+- latest stable version
+
 #### How it works?
 
 By now it listen automatically to port 8080 by default (this should be changed in the near future). 
@@ -25,7 +31,7 @@ This service relies on top of some greate packages like:
 #### TODO
 
 - [x] Resize a given image with width/height parameters
-- [ ] Create some unit tests
+- [x] Create some unit tests
 - [ ] Gopher even more this code
-- [ ] Add support to upload final image result to AWS S3 or similar service (creating adapters)
 - [x] Configure server with configuration files
+- [x] Move validators to another Go file
