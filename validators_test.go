@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestCheckHostInWhiteListWithEmptyConfiguration(t *testing.T) {
+func Test_CheckHostInWhiteListWithEmptyConfiguration(t *testing.T) {
 	config := new(Configuration)
 	validator := Validator{config}
 
@@ -13,7 +13,7 @@ func TestCheckHostInWhiteListWithEmptyConfiguration(t *testing.T) {
 	}
 }
 
-func TestCheckHostInWhiteListWithSomeHostsInWhieList(t *testing.T) {
+func Test_CheckHostInWhiteListWithSomeHostsInWhieList(t *testing.T) {
 	config := new(Configuration)
 	config.HostWhiteList = []string{"http://www.google.com", "two hosts"}
 	validator := Validator{config}
@@ -25,7 +25,7 @@ func TestCheckHostInWhiteListWithSomeHostsInWhieList(t *testing.T) {
 	}
 }
 
-func TestCheckHostInWhiteListWithValidHost(t *testing.T) {
+func Test_CheckHostInWhiteListWithValidHost(t *testing.T) {
 	config := new(Configuration)
 	config.HostWhiteList = []string{"one host", "sergiosola.com"}
 	validator := Validator{config}
@@ -36,7 +36,7 @@ func TestCheckHostInWhiteListWithValidHost(t *testing.T) {
 	}
 }
 
-func TestCheckHostInWhiteListWithValidPattern(t *testing.T) {
+func Test_CheckHostInWhiteListWithValidPattern(t *testing.T) {
 	config := new(Configuration)
 	config.HostWhiteList = []string{"www.google.com", "([a-z]+).cdn.google.com"}
 	validator := Validator{config}
